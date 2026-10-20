@@ -78,7 +78,7 @@ def chunk_text(section: str, target_words: int = 250, overlap_paragraphs: int = 
     return chunks
 
 
-def load_chunks(html_path: str, company: str) -> list[dict]:
+def load_chunks(html_path: str, company: str, target_words: int = 250) -> list[dict]:
     """Parse one saved filing into chunk records tagged with company."""
     warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
     with open(html_path, encoding="utf-8") as f:

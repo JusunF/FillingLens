@@ -1,23 +1,17 @@
-import re
+import random
 from ingestion.narrative_chunker import load_chunks
 
-KEYWORDS = ["repurchase", "dividend", "research and development", "effective tax rate"]
+FILINGS = [
+    ("sample_filing.html", "Apple"),
+    ("sample_microsoft.html", "Microsoft"),
+    ("sample_amazon.html", "Amazon"),
+]
 
-for path, company in [("sample_microsoft.html", "Microsoft"), ("sample_amazon.html", "Amazon")]:
-    chunks = load_chunks(path, company)
-    print(f"\n################ {company} ################")
-    for kw in KEYWORDS:
-        print(f"\n--- '{kw}' ---")
-        shown = 0
-        for c in chunks:
-            for sent in re.split(r"(?<=[.!?])\s+", c["text"].replace("\n", " ")):
-                if kw in sent.lower() and shown < 2:
-                    print(f"[{c['chunk_id']}] {sent[:300]}")
-                    shown += 1
+chunks = []
+for path, company in FILINGS:
+    chunks.extend(load_chunks(path, company))
 
-amazon = load_chunks("sample_amazon.html", "Amazon")
-shortest = min(amazon, key=lambda c: len(c["text"].split()))
-print("\n--- Amazon shortest chunk ---")
-print(shortest["chunk_id"], repr(shortest["text"][:300]))
-print("\n--- Amazon last chunk (tail) ---")
-print(repr(amazon[-1]["text"][-300:]))
+random.seed(7)  # fixed seed so you get the same sample every run
+for c in random.sample(chunks, 15):
+    text = c["text"].replace("\n", " ")
+    print(f"\n[{c['chunk_id']}] {text[:450]}")
